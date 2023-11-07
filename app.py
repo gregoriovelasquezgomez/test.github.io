@@ -3,6 +3,9 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import plotly.express as px
+
+st.set_page_config(page_title=None, page_icon=None, layout="centered", initial_sidebar_state="expanded", menu_items=None)
 
 # Add a title and intro text
 st.title('Ejemplo Grafica')
@@ -11,7 +14,7 @@ st.text('analisis de sensibilidad de la demanda energética y generación de Col
 
 st.sidebar.title('Navegación')
 # Create file uploader object
-upload_file = st.sidebar.file_uploader('Upload an excel file with data (from example code)')
+upload_file = st.sidebar.file_uploader('Adjunta un archivo csv que quieras plotear')
 
 
 # Check to see if a file has been uploaded
@@ -22,19 +25,21 @@ if upload_file is not None:
     df = pd.read_csv(upload_file)
 
     # Create a section for the dataframe statistics
-    st.header('Statistics of Dataframe')
+    st.header('Estadisticas del dataframe')
     st.write(df.describe())
 
     # Create a section for the dataframe header
-    st.header('Header of Dataframe')
+    st.header('Cabecera del dataframe')
     st.write(df.head())
 
     # Create a section for matplotlib figure
-    st.header('Plot of Data')
+    st.header('Gráfica')
     
-    fig, ax = plt.subplots(1,1)
-    ax.scatter(x=df['Depth'], y=df['Magnitude'])
-    ax.set_xlabel('Depth')
-    ax.set_ylabel('Magnitude')
+    col1, col2 = st.columns(2)
+
+    x_axis_val = col1.selectbox('Selecciona el eje X', options=df.columns)
+    y_axis_val = col2.selectbox('Selecciona el eje Y', options=df.columns)
+
     
-    st.pyplot(fig)
+    plot = px.scatter(df, x=x_axis_val, y=y_axis_val)   
+    st.plotly_chart(plot, use_container_width=True)
